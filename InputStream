@@ -1,0 +1,42 @@
+Background:
+Older languages(particularly C) tended to assume that a byte is exactly the same thing as a “character”—a letter, digit, or other linguistic element. However, Java is designed to be used internationally, and eight bits are simply not enough to handle the different character sets used around the world. Many languages (Arabic, Indian) do have many more than 256 characters, which lead to the unification of these many character code sets is called, not surprisingly, Unicode.
+Java uses Unicode as their character sets, allowing us to read and write text in any of these human languages. 
+
+Java provides two sets of classes for reading and writing.
+1. The Stream is for reading or writing bytes of data.
+2. Readers and Writers for reading any characters comes under Unicode. 
+
+Stream classes just work exactly like other programming languages, it treats all the bytes as characters and in case if we pass any special character that will not be supported by byte then it end up returing corrupted text. in order to deal with these kind of situation reader and writer classes has to be used when we are dealing with the text instead of bytes.
+Readers and Writers should always be used instead of InputStreams and OutputStreams when dealing with
+characters instead of bytes. Simply because the converters are already packaged inside them. 
+
+
+InputStream is a abstract class which provides methods to read the input as byte. which means the characters read from one of the method returns the respective integer value which is (0 to 255).
+An inputStream is the base class to read bytes from a stream (network or file). It provides the ability to read bytes from the stream and detect the end of the stream.
+Any class under java.io prefixed with "Buffered" provides a buffer to optimize speed access to data. Data is basicaly read ahead of time and this reduces disk or network access.
+
+DataInputStream is a kind of InputStream to read data directly as primitive data types.
+
+Reading Objects from File:
+FileInputStream inFile = new FileInputStream(fileName);
+ObjectInputStream inStream = new ObjectInputStream(inFile);
+car = (Car)inStream.readObject();
+
+At the most primitive level, the above code read bits from a file which the FileInputStream is able to do. This is then filtered through the ObjectInputStream which translates these bits into Java objects, but does not know the actual type of the object created, which is why we must cast the object as a Car.
+The try/catch block is needed incase the exception arises. 
+
+In Summary, when working with multiple input encodings around the world, use a Reader class. The particular subclass that allows us to read lines of characters is a BufferedReader.
+The question and idiom which puzzles us often is, How Readers and Streams can work together to get the better of each other? In other words, How do you get from a Stream to a Reader? A “crossover” class called InputStreamReader or any Stream post fixed with Reader is tailor-made for this purpose. 
+Pass the Stream (like System.in) to the InputStreamReader constructor and it will provide a Reader, which in turn pass to the BufferedReader constructor. 
+The usual idiom for writing this in Java is to nest the constructor calls:
+BufferedReader is = new BufferedReader(new InputStreamReader(System.in));
+
+Using along with try-with-resources would be:
+    try (BufferedReader bReader = new BufferedReader(new InputStreamReader(System.in))) {
+      String line;
+      while((line = bReader.readLine()) != null) {
+        System.out.println(line);
+      }
+    } catch (IOException e) {
+      System.err.println("Error while reading the input: " + e);
+    }
