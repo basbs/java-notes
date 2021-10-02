@@ -1,0 +1,56 @@
+The interface Comparable<T> contains a method that can be used to compare one object to another. 
+When a class implements Comparable, the ordering  called the natural ordering.
+The method compareTo returns negative, zero, or positive if the argument is less than, equal to, or greater than the given object. 
+
+interface Comparable<T> {
+    public int compareTo(T o);
+}
+
+class Integer implements Comparable<Integer> {
+    public int compareTo(Integer that) {
+        return this.value < that.value ? -1 :
+                this.value == that.value ? 0 : 1 ;
+    }
+}
+
+Example-1:
+Integer a = 10;
+a.compareTo(9) ==> 1
+a.compareTo(11) ==> -1
+a.compareTo(10) ==> 0
+
+Example-2:
+String pig = "pig";
+pig.compareTo("elephant")
+Generally we expect the above comparison to return -ve number as "elephant" has more characters and bigger than "pig". However, we get +ve number in return. it is simply because when we subtract p(112) - e(101) ==> 11. i.e. we get +ve number in return. 
+If we had passed "Elephant" we would have received p(112) - E(69) ==>43 again +ve number. 
+
+The above examples clearly shows that, when we use compareTo method to compare, it simply try to subtract the this value with the argument and returns the result. 
+
+Two objects are equal if and only if they compare as the same:
+x.equals(y) if and only if x.compareTo(y) == 0
+compareTo differs from equals. If x is not null, x.equals(null) must return false, while x.compareTo(null) must throw a NullPointerException.
+
+Comparator:
+The ordering provided by the interface is called the natural ordering, so the
+Comparable interface provides, so to speak, an unnatural ordering.
+
+interface Comparator<T> {
+public int compare(T o1, T o2);
+public boolean equals(Object obj);
+}
+
+Best example to differentiate  Comparator and Comparable:
+in comparable we can only compare the string with natural ordering. what if sometimes we may have to compare with the length or with the custom comparison.
+
+Comparator<String> sizeOrder = new Comparator<String>() {
+    public int compare(String s1, String s2) {
+        return s1.length() < s2.length() ? -1 :
+                s1.length() > s2.length() ? 1 :
+                s1.compareTo(s2) ;
+    }
+};
+
+Comparators can be passed to a sort method (such as Collections.sort or Arrays.sort) to allow precise control over the sort order.
+Comparators can also be used to control the order of certain data structures (such as sorted sets or sorted maps), or to provide an ordering for collections of objects that don't have a natural ordering.
+Unlike Comparable, a comparator may optionally permit comparison of null arguments, while maintaining the requirements for an equivalence relation.
