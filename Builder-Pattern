@@ -1,0 +1,94 @@
+The builder pattern is a good choice when designing classes whose constructors or static factories would have more than a handful of parameters. OR When have an immutable class and want to provide a fluent API to ease the client usage : both object creation and object change.
+We've all at some point encountered a class with a list of constructors where each addition adds a new option parameter.
+Example: 
+Person()Pizza(int size) { ... }        
+Pizza(int size, boolean cheese) { ... }    
+Pizza(int size, boolean cheese, boolean pepperoni) { ... }    
+Pizza(int size, boolean cheese, boolean pepperoni, boolean bacon) { ... }
+
+This is called the Telescoping Constructor Pattern. The problem with this pattern is:
+1. Remembering the required order of the parameters.
+2. Which constructor to use for a given situation. 
+3. 
+
+One alternative to Telescoping constructor is, Java Bean Pattern where we call a constructor with the mandatory parameters and then call any optional setters:
+Pizza pizza = new Pizza(12);
+pizza.setCheese(true);
+pizza.setPepperoni(true);
+pizza.setBacon(true);
+
+The problem with the above approach is, the object is created over several calls it may be in an inconsistent state  through its construction.This requires a lot of extra effort to ensure thread safety.
+
+The better alternative is to use the Builder Pattern.
+
+public class Pizza {
+  private final int size;
+  private final boolean cheese;
+  private final boolean pepperoni;
+  private final boolean bacon;
+
+  private Pizza(PizzaBuilder builder) {
+    size = builder.size;
+    cheese = builder.cheese;
+    pepperoni = builder.pepperoni;
+    bacon = builder.bacon;
+  }
+
+public static PizzaBuilder builder(int size) {
+    return new PizzaBuilder(size);
+}
+  public static class PizzaBuilder {
+    //required
+    private final int size;
+
+    //optional
+    private boolean cheese = false;
+    private boolean pepperoni = false;
+    private boolean bacon = false;
+
+    public PizzaBuilder(int size) {
+      this.size = size;
+    }
+
+    public PizzaBuilder cheese(boolean value) {
+      cheese = value;
+      return this;
+    }
+
+    public PizzaBuilder pepperoni(boolean value) {
+      pepperoni = value;
+      return this;
+    }
+
+    public PizzaBuilder bacon(boolean value) {
+      bacon = value;
+      return this;
+    }
+
+    public Pizza build() {
+      return new Pizza(this);
+    }
+  }
+}
+
+Main Points to focus on when implementing Builder Pattern:
+– Make the main class constructor private. This ensures, instance creation happens only by calling builder method.
+– Builder class has to be a nested static class and not just a nested class.
+- Both builder and main class will have same properties duplicated in them.
+– the builder API must be fluent.
+
+Now that Pizza is immutable and that parameter values are all in a single location.This results in code that is easy to write and very easy to read and understand. 
+In this example, the build method could be modified to check parameters after they have been copied from the builder to the Pizza object and throw an IllegalStateException if an invalid parameter value has been supplied. 
+This pattern is flexible and it is easy to add more parameters to it in the future. It is really only useful if we are going to have more than 4 or 5 parameters for a constructor. 
+
+
+Builder pattern, builder design pattern, fluent API. Are these the same thing ?
+No they are not. 
+Builder Pattern: is an alternative to constructors/factory/setters to create an object with a consistent state for a specific class.
+Builder design pattern: is a flexible solution to various object creation problems.The intent of the Builder design pattern is to separate the construction of a complex object from its representation.
+Fluent API: a.k.a. fluent interfaces, are object-oriented APIs designed to make the API code more readable and therefore easier to use. Wiring objects together via method chaining helps accomplish these readability and usability goals. In this design, chained methods generally maintain the same type.
+
+References:
+http://myjavaadventures.com/blog/2019/03/20/the-builder-pattern-not-the-builder-design-pattern-in-java/
+https://stackoverflow.com/questions/17937755/what-is-the-difference-between-a-fluent-interface-and-the-builder-pattern 
+https://stackoverflow.com/questions/328496/when-would-you-use-the-builder-pattern/4202116
