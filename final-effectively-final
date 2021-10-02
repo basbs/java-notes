@@ -1,0 +1,37 @@
+
+Problem Statement:
+When we have code like this:
+
+public Test {
+    public static void main(String[] args) {
+        int localVar;
+        Runnable runnable = () -> {
+            localVar = 1;
+            System.out.println("localVar value: " + localVar);
+        };
+    }
+}
+
+We get the error as "Local variable localVar defined in an enclosing scope must be final or effectively final". We get the same error with the below code as well.
+int localVar = 1;
+Runnable runnable = () -> {
+    localVar++;
+    System.out.println("localVar value: " + localVar);
+};
+
+So, what exactly the difference between final and effectively final in Java?
+As per the documentation "Starting from Java SE 8, a local class can access local variables and parameters of the enclosing block that are final or effectively final. A variable or parameter whose value is never changed after it is initialized is effectively final." 
+As we see there is no difference in documentation except the effectively word.
+Consider the below final variable.
+      final int localVar = 10;  
+When declared "localVar" as final and if we try to change the value of this variable again, we'll run into a compilation error. Consider  another variable non final variable 
+      int localVar = 10;  
+Though the localVar declared as non final until unless we assign a new value to it , still compiler treats it as a final which is considered as effectively final. 
+The point to highlight here is, once we explicitly add the final keyword to a variable while initializing, any subsequent initialization leads to compilation error and that of course is the actual final behavior. However, if we try to assign a new value to a normal variable, we will not encounter any errors or warnings but it is no more effectively final.
+
+In Summary, the effectively final variable is a variable which behave like a final variable without declaring it as final.
+ Note: if a reference is not changed it is effectively final even if the object referenced is changed. 
+
+ Reference:
+ https://stackoverflow.com/questions/4732544/why-are-only-final-variables-accessible-in-anonymous-class
+ https://stackoverflow.com/questions/20938095/difference-between-final-and-effectively-final
