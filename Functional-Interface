@@ -1,0 +1,98 @@
+A class extends an interface, provides implementation to all the methods. This can achieved via
+    1. Top level class
+    2. Inner class
+    3. Anonymous inner class. 
+The anonymous inner class syntax consists of the word "new" followed by the interface name and parentheses, implying that we are defining a class without an explicit name that implements the interface. The code in the braces ({}) then provides the implementation for given SAM.
+
+A functional interface is an interface with a single abstract method(SAM) (i.e. method with signature no implementation). 
+Lambda expressions provide the implementation of abstract method of a functional interface directly inline and treat the whole expression as an instance of a functional interface (more technically speaking, an instance of a concrete implementation of the functional interface). 
+We can achieve the same thing with an anonymous inner class, although it’s clumsier: we provide an implementation and instantiate it directly inline.
+
+@FunctionalInterface
+annotation is used to indicate that the interface is intended to be a functional interface. The compiler will return a meaningful error if we define an interface using the @FunctionalInterface annotation and it isn’t a functional interface.
+
+Predicate
+The java.util.function.Predicate<T> interface defines an abstract method named test that
+accepts an object of generic type T and returns a boolean.
+
+@FunctionalInterface
+public interface Predicate<T>{
+    boolean test(T t);
+}
+public static <T> List<T> filter(List<T> list, Predicate<T> p) {
+    List<T> results = new ArrayList<>();
+        for(T s: list){
+            if(p.test(s)){
+                results.add(s);
+            }
+        }
+        return results;
+}
+
+
+Consumer
+The java.util.function.Consumer<T> interface defines an abstract method named accept that
+takes an object of generic type T and returns no result (void).
+@FunctionalInterface
+public interface Consumer<T> {
+    public void accept(T t);
+}
+
+public static <T> void forEach(List<T> list, Consumer<T> consumer) {
+    for(T t: list) {
+        consumer.accept();
+    }
+}
+
+Example: 
+forEach(Arrays.asList("1", "2", "3"), i -> System.out.println(i));
+
+Function
+The java.util.function.Function<T, R> interface defines an abstract method named apply that
+takes an object of generic type T as input and returns an object of generic type R.
+This lambda can be used to map information from an input object to an output. 
+
+@FunctionalInterface
+public interface Function<T,R> {
+    public R apply(T t);
+}
+
+public static <T,R> R map(List<T> list, Function<T, R> func) {
+    List<R> result = new ArrayList<>();
+    for(T t: list) {
+        result.add(func.apply(t));
+    }
+    return result;
+}
+
+Example:
+map(Arrays.asList("lambda", "versus", "streams"), (String i) -> i.length());
+
+Why do we have separate functional interfaces for primitive types?
+When primitive data types are used, internally it is boxed to reference type by compiler. However there is performance overhead on this approach. 
+1. Boxed values are essentially a wrapper around primitive types and are stored on the heap.
+2. boxed values use more memory and require additional memory lookups to fetch the wrapped primitive value.
+In order to avoid autoboxing operations when the inputs or outputs are primitives, there are separate functional interfaces for primitive types.
+Example: IntPredicate, IntConsumer, IntFunction
+
+Exceptions in Functional Interfaces:
+By default, None of the inbuilt functional interfaces support throwing the checked exception. If we want such interfaces then we got 2 options. 
+1. implement the custom functional interfaces and append the throws in method signature. 
+Example:
+@FunctionalInterface
+public interface Function<T,R> {
+    public R apply(T t) throws IOException;
+}
+2. If we are already consuming the existing functional interfaces where we can't afford to append the above piece of code, then while passing the implementation we must enclose the logic inside the try/catch block. 
+Example:
+(BufferedReader r, String s) -> {
+    try {
+        return r.readline();
+    }
+    catch(IOException e) {
+        //take action on 
+    }
+}
+
+How lambdas are type checked by the compiler?
+

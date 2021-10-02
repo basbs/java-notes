@@ -1,0 +1,86 @@
+Classes can be nested. Example: class A can contain class B which contains class C which contains class D, etc. However, more than one level of class nesting is rare, as it is generally bad design.
+Nested classes are divided into two categories: non-static and static. Non-static nested classes are called inner classes. Nested classes that are declared static are called static nested classes. 
+A nested class is a member of its enclosing class. Non-static nested classes (inner classes) have access to other members of the enclosing class, even if they are declared private. 
+Static nested classes do not have access to other members of the enclosing class. As a member of the OuterClass, a nested class can be declared private, public, protected, or package private. (Recall that outer classes can only be declared public or package private.)
+
+
+Couple of reasons behind creating nested or inner classes are:
+    organization/convenience: sometimes it seems most sensible to sort a class into the namespace of another class, especially when it won't be used in any other context.
+
+    access: nested classes have special access to the variables/fields of their containing classes (precisely which variables/fields depends on the kind of nested class, whether inner or static).
+
+There are four kinds of nested class in Java. In brief, they are:
+    Static class: declared as a static member of another class
+    Inner class: declared as an instance member of another class
+    Local inner class: declared inside an instance method of another class
+    Anonymous inner class: like a local inner class, but written as an expression which returns a one-off object (kind of functional interfaces)
+
+Static Classes
+As with class methods and variables, a static nested class is associated with its outer class. And like static class methods, a static nested class cannot refer directly to instance variables or methods defined in its enclosing class: it can use them only through an object reference.
+Example: Builder pattern is the perfect example for static class usage in main class.
+
+package xyz;
+public class Model {
+    ...
+    public static class BuilderModel {
+        ...
+    }
+}
+
+
+Inner Classes
+As with instance methods and variables, an inner class is associated with an instance of its enclosing class and has direct access to that object's methods and fields. Also, because an inner class is associated with an instance, it cannot define any static members itself.
+
+Objects that are instances of an inner class exist within an instance of the outer class. Consider the following classes:
+
+class OuterClass {
+    ...
+    class InnerClass {
+        ...
+    }
+}
+
+An instance of InnerClass can exist only within an instance of OuterClass and has direct access to the methods and fields of its enclosing instance.
+
+To instantiate an inner class, you must first instantiate the outer class. Then, create the inner object within the outer object with this syntax:
+
+OuterClass outerObject = new OuterClass();
+OuterClass.InnerClass innerObject = outerObject.new InnerClass();
+
+There are two special kinds of inner classes: local classes and anonymous classes.
+
+Local Inner Classes
+A local inner class is a class declared in the body of a method. Such a class is only known within its containing method, so it can only be instantiated and have its members accessed within its containing method. The gain is that a local inner class instance is tied to and can access the final local variables of its containing method. When the instance uses a final local of its containing method, the variable retains the value it held at the time of the instance's creation, even if the variable has gone out of scope (this is effectively Java's crude, limited version of closures).
+
+Because a local inner class is neither the member of a class or package, it is not declared with an access level. (Be clear, however, that its own members have access levels like in a normal class.)
+
+If a local inner class is declared in an instance method, an instantiation of the inner class is tied to the instance held by the containing method's this at the time of the instance's creation, and so the containing class's instance members are accessible like in an instance inner class. A local inner class is instantiated simply via its name, e.g. local inner class Cat is instantiated as new Cat(), not new this.Cat() as you might expect.
+
+
+Anonymous Class
+1. An anonymous class has access to the members of its enclosing class.
+2. An anonymous class cannot access local variables in its enclosing scope that are not declared as final or effectively final.
+3. Like a nested class, a declaration of a type (such as a variable) in an anonymous class shadows any other declarations in the enclosing scope that have the same name. 
+4. Defining the static block or interfaces inside the anonymous class is not allowed. However, abstract class is allowed. 
+
+Below are the properties allowed to define in Anonymous class:
+1. Fields - 
+field must be final or local variable. static not allowed. 
+can use enclosed class's static or instance fields, also allowed to override the type of enclosed class variables type (shadowing)
+cannot access local variables of enclosing scope unless they are defined as final or effectively final.
+
+2. Extra methods (even if they do not implement any methods of the supertype)
+
+3. Instance initializers
+Curly brace without static keyword is instance initializers.
+
+4. Local classes
+
+Can i access instance variable of enclosing class from an anonymous class?
+Yes
+Can i access static variable of enclosing class from an anonymous class?
+Yes
+https://stackoverflow.com/questions/70324/java-inner-class-and-static-nested-class
+https://docs.oracle.com/javase/tutorial/java/javaOO/localclasses.html
+https://docs.oracle.com/javase/tutorial/java/javaOO/anonymousclasses.html
+https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html
